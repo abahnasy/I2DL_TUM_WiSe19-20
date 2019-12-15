@@ -125,19 +125,8 @@ class TwoLayerNet(object):
         # of same size                                                         #
         ########################################################################
 
-        # W1
-        # ----+                      W2         b2
-        # dW2  \                     ----+      ----+
-        #      (*)----+              dW2  \     db2  \
-        # X    /       \                   \          \  
-        # ----+         \               h   \          \   scores           softmaxes
-        #               (+)------(ReLU)-----(*)--------(+)--------(softmax)----------
-        # b1            /  drelu        dh      dscores    dscores 
-        # -------------+
-        # db1    
-        
         softmaxes = np.exp(lim_scores) / np.sum(np.exp(lim_scores), axis=1)[:,None]
-        # Gradient of softmax (derivative of softmax - see softmax.py)
+        
         dscores = softmaxes
         dscores[np.arange(N), y] -= 1
         dscores /= N

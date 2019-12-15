@@ -1,0 +1,1 @@
+lr 1.000000e-01 reg 1.000000e-03 train accuracy: 0.515792 val accuracy: 0.522000lr 1.000000e-01 reg 1.500000e-03 train accuracy: 0.514312 val accuracy: 0.507000best validation accuracy achieved during validation: 0.522000

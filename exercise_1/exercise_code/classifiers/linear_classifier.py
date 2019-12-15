@@ -53,9 +53,9 @@ class LinearClassifier(object):
             # replacement is faster than sampling without replacement.              #
             #########################################################################
 
-            batch_indices = np.random.choice(num_train, batch_size, replace=False)
-            X_batch = X[batch_indices]
-            y_batch = y[batch_indices]
+            batches = np.random.choice(num_train, batch_size, replace=False)
+            X_batch = X[batches]
+            y_batch = y[batches]
 
             #########################################################################
             #                       END OF YOUR CODE                                #

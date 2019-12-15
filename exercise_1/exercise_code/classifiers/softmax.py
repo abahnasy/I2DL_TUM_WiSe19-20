@@ -35,15 +35,25 @@ def cross_entropy_loss_naive(W, X, y, reg):
     # the regularization!                                                      #
     ############################################################################
 
-    scores = X.dot(W)
+    
+    # Get the number fo training samples
     num_train = X.shape[0]
+    # Get the number of classes
     num_classes = W.shape[1]
+    # Calculate the classification scores
+    classes_scores = X.dot(W)
 
     # Softmax Loss
     for i in range(num_train):
-        f = scores[i] - np.max(scores[i]) # avoid numerical instability
-        softmax = np.exp(f)/np.sum(np.exp(f))
+        # To avoid numeric stability
+        f = classes_scores[i] - np.max(classes_scores[i]) # size 10 * 1
+        softmax = np.exp(f)/np.sum(np.exp(f)) 
+        
+        #for k in range(num_classes):
+        #    loss+= - y[i][k] * np.log(softmax[k]) # No need to loop to calculate
+        
         loss += -np.log(softmax[y[i]])
+        # dL/dW(i,j) = X_i *(y_hat_j - y_j)
         # Weight Gradients
         for j in range(num_classes):
             dW[:,j] += X[i] * softmax[j]
@@ -82,12 +92,12 @@ def cross_entropy_loss_vectorized(W, X, y, reg):
     ############################################################################
 
     num_train = X.shape[0]
-    scores = X.dot(W)
-    scores = scores - np.max(scores, axis=1, keepdims=True)
+    classes_scores = X.dot(W)
+    classes_scores = classes_scores - np.max(classes_scores, axis=1, keepdims=True)
     
-    # Softmax Loss
-    sum_exp_scores = np.exp(scores).sum(axis=1, keepdims=True)
-    softmax_matrix = np.exp(scores)/sum_exp_scores
+    # Loss function
+    sum_exp_scores = np.exp(classes_scores).sum(axis=1, keepdims=True)
+    softmax_matrix = np.exp(classes_scores)/sum_exp_scores
     loss = np.sum(-np.log(softmax_matrix[np.arange(num_train), y]) )
 
     # Weight Gradient
@@ -149,21 +159,13 @@ def softmax_hyperparameter_tuning(X_train, y_train, X_val, y_val):
     ############################################################################
     grid_search = [ (lr, rg) for lr in learning_rates for rg in regularization_strengths]
     for lr, rg in grid_search:
-        # Create a new Softmax instance
         softmax_model = SoftmaxClassifier()
-        # Train the model with current parameters
         softmax_model.train(X_train, y_train, learning_rate=lr, reg=rg, num_iters=1000)
-        # Predict values for training set
         y_train_pred = softmax_model.predict(X_train)
-        # Calculate accuracy
         train_accuracy = np.mean(y_train_pred == y_train)
-        # Predict values for validation set
         y_val_pred = softmax_model.predict(X_val)
-        # Calculate accuracy
         val_accuracy = np.mean(y_val_pred == y_val)
-        # Save results
         results[(lr,rg)] = (train_accuracy, val_accuracy)
-        # Append the model and its validation accuracy to all_classifiers list
         all_classifiers.append([softmax_model, val_accuracy])
         if best_val < val_accuracy:
             best_val = val_accuracy
