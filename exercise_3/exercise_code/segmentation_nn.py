@@ -47,7 +47,6 @@ class SegmentationNN(nn.Module):
         x_input = x
         x = self.vgg(x)
         x = self.fcn(x)
-        x = nn.functional.upsample(x, x_input.size()[2:], mode='bilinear').contiguous()
         x = F.interpolate(x, x_input.size()[2:], mode='bilinear', align_corners=True)
         #######################################################################
         #                           END OF YOUR CODE                          #
