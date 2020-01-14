@@ -2,6 +2,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import torch.nn.functional as F
 
 
 class SegmentationNN(nn.Module):
@@ -35,6 +36,7 @@ class SegmentationNN(nn.Module):
         x = self.vgg(x)
         x = self.fcn(x)
         x = nn.functional.upsample(x, x_input.size()[2:], mode='bilinear').contiguous()
+        x = F.interpolate(x, x_input.size()[2:], mode='bilinear', align_corners=True)
         #######################################################################
         #                           END OF YOUR CODE                          #
         #######################################################################
