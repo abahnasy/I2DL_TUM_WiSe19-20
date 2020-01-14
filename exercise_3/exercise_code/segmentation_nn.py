@@ -26,7 +26,7 @@ class SegmentationNN(nn.Module):
                                 nn.Conv2d(64, 32, kernel_size=3, padding=1),
                                 nn.ReLU(inplace=True),
                                 nn.Dropout2d(),
-                                nn.Conv2d(32, self.num_classes, 1)
+                                nn.Conv2d(32, num_classes, 1)
         )
         
         #######################################################################
