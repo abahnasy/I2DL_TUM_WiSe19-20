@@ -15,8 +15,20 @@ class SegmentationNN(nn.Module):
         #######################################################################
         self.vgg = models.vgg16(pretrained=True).features
         self.fcn = nn.Sequential(
-            nn.Conv2d(512, num_classes, 1)
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(512, 256, kernel_size=3, padding=1),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(256, 128, kernel_size=3, padding=1),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(128, 64, kernel_size=3, padding=1),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(64, 32, kernel_size=3, padding=1),
+                                nn.ReLU(inplace=True),
+                                nn.Dropout2d(),
+                                nn.Conv2d(32, self.n_classes, 1)
         )
+        
         #######################################################################
         #                           END OF YOUR CODE                          #
         #######################################################################
