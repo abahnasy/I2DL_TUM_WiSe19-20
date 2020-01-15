@@ -1,5 +1,7 @@
 import numpy as np
 import torch
+from torch.autograd import Variable
+from random import shuffle
 
 
 class Solver(object):
