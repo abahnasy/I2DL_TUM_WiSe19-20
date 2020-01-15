@@ -65,6 +65,69 @@ class Solver(object):
         #   [Epoch 1/5] VAL   acc/loss: 0.539/1.310                           #
         #   ...                                                               #
         #######################################################################
+        for epoch in range(num_epochs):
+            # training
+            for i, (inputs, targets) in enumerate(train_loader, 1):
+                inputs, targets = Variable(inputs), Variable(targets)
+                if model.is_cuda:
+                    inputs, targets = inputs.cuda(), targets.cuda()
+
+                optim.zero_grad()
+                outputs = model(inputs)
+                loss = self.loss_func(outputs, targets)
+                loss.backward()
+                optim.step()
+
+                self.train_loss_history.append(loss.data.cpu().numpy())
+                if log_nth and i % log_nth == 0:
+                    last_log_nth_losses = self.train_loss_history[-log_nth:]
+                    train_loss = np.mean(last_log_nth_losses)
+                    print('[Iteration %d/%d] TRAIN loss: %.3f' % \
+                    (i + epoch * iter_per_epoch,
+                    iter_per_epoch * num_epochs,
+                    train_loss))
+
+            _, preds = torch.max(outputs, 1)
+
+            # Only allow images/pixels with label >= 0 e.g. for segmentation
+            targets_mask = targets >= 0
+            train_acc = np.mean((preds == targets)[targets_mask].data.cpu().numpy())
+            self.train_acc_history.append(train_acc)
+            if log_nth:
+                print('[Epoch %d/%d] TRAIN acc/loss: %.3f/%.3f' % (epoch + 1,
+                                                                   num_epochs,
+                                                                   train_acc,
+                                                                   train_loss))
+
+            # Validation
+            val_losses = []
+            val_scores = []
+            model.eval()
+            for inputs, targets in val_loader:
+                inputs, targets = Variable(inputs), Variable(targets)
+                if model.is_cuda:
+                    inputs, targets = inputs.cuda(), targets.cuda()
+
+                outputs = model.forward(inputs)
+                loss = self.loss_func(outputs, targets)
+                val_losses.append(loss.data.cpu().numpy())
+
+                _, preds = torch.max(outputs, 1)
+
+                # Only allow images/pixels with target >= 0 e.g. for segmentation
+                targets_mask = targets >= 0
+                scores = np.mean((preds == targets)[targets_mask].data.cpu().numpy())
+                val_scores.append(scores)
+
+            model.train()
+            val_acc, val_loss = np.mean(val_scores), np.mean(val_losses)
+            self.val_acc_history.append(val_acc)
+            self.val_loss_history.append(val_loss)
+            if log_nth:
+                print('[Epoch %d/%d] VAL   acc/loss: %.3f/%.3f' % (epoch + 1,
+                                                                   num_epochs,
+                                                                   val_acc,
+                                                                   val_loss))
 
         #######################################################################
         #                             END OF YOUR CODE                        #
