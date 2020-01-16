@@ -2,6 +2,8 @@ from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 
+from exercise_code.data_utils import get_keypoints
+from exercise_code.data_utils import get_image
 
 class FacialKeypointsDataset(Dataset):
     """Face Landmarks dataset."""
@@ -26,7 +28,7 @@ class FacialKeypointsDataset(Dataset):
         # Return the length of the dataset                                    #
         #######################################################################
 
-        pass
+        return len(self.key_pts_frame)
 
         #######################################################################
         #                             END OF YOUR CODE                        #
@@ -41,7 +43,12 @@ class FacialKeypointsDataset(Dataset):
         #        {'image': image of shape [C, H, W],                          #
         #         'keypoints': keypoints of shape [num_keypoints, 2]}         #
         #######################################################################
+        
+        image = np.array([get_image(idx, self.key_pts_frame)])
+        keypoints = get_keypoints(idx, self.key_pts_frame)
 
+        sample['image'] = image
+        sample['keypoints'] = keypoints
 
 
         #######################################################################
