@@ -21,7 +21,37 @@ class KeypointModel(nn.Module):
         # and other layers (such as dropout or  batch normalization) to avoid #
         # overfitting.                                                        #
         #######################################################################
+        self.model = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size = 4, padding = 1),
+            nn.ELU(),
+            nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(p=0.1),
 
+            nn.Conv2d(32, 64, kernel_size = 3, padding = 1),
+            nn.ELU(),
+            nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(p=0.2),
+            
+            nn.Conv2d(32, 128, kernel_size = 2, padding = 1),
+            nn.ELU(),
+            nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(p=0.3),
+            
+            nn.Conv2d(32, 256, kernel_size = 1, padding = 1),
+            nn.ELU(),
+            nn.MaxPool2d(2, stride=2),
+            nn.Dropout2d(p=0.4),
+            
+            nn.Linear(6400,1000),
+            nn.ELU(),
+            nn.Dropout2d(p=0.5),
+            
+            nn.Linear(1000,1000),
+            nn.ReLU(), # Linear activation function
+            nn.Dropout2d(p=0.6),
+            
+            nn.Linear(1000,30)
+        )
         #######################################################################
         #                             END OF YOUR CODE                        #
         #######################################################################
@@ -35,7 +65,7 @@ class KeypointModel(nn.Module):
         # a modified x, having gone through all the layers of your model,     #
         # should be returned                                                  #
         #######################################################################
-
+        x = self.model(x)
         #######################################################################
         #                           END OF YOUR CODE                          #
         #######################################################################
